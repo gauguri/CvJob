@@ -1,5 +1,6 @@
 using System.Net;
 using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace F500.JobMatch.Api.Middleware;
 

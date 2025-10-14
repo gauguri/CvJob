@@ -1,5 +1,3 @@
-using RobotsTxt;
-
 namespace F500.JobMatch.Api.Services.Crawl;
 
 public class RobotsService
@@ -34,7 +32,7 @@ public class RobotsService
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var robots = Robots.Load(content);
+            var robots = RobotsRules.Parse(content);
             var userAgent = _configuration.GetSection("Crawl").GetValue<string>("UserAgent") ?? "f500-jobmatch-bot/1.0";
             return robots.IsPathAllowed(userAgent, uri.AbsolutePath);
         }
