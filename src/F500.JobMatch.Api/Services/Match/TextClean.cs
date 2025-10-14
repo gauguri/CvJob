@@ -8,7 +8,50 @@ public class TextClean
     private static readonly Regex NonAlphaRegex = new("[^a-z0-9 ]", RegexOptions.Compiled);
     private static readonly HashSet<string> StopWords = new(StringComparer.OrdinalIgnoreCase)
     {
-        "a","an","the","and","or","but","if","is","are","was","were","be","being","been","to","of","in","that","it","for","on","with","as","at","this","by","from","or","we","you","your","our","they","their","them","he","she","his","her","not","can","will","would","should","could"
+        "a",
+        "an",
+        "the",
+        "and",
+        "or",
+        "but",
+        "if",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "being",
+        "been",
+        "to",
+        "of",
+        "in",
+        "that",
+        "it",
+        "for",
+        "on",
+        "with",
+        "as",
+        "at",
+        "this",
+        "by",
+        "from",
+        "we",
+        "you",
+        "your",
+        "our",
+        "they",
+        "their",
+        "them",
+        "he",
+        "she",
+        "his",
+        "her",
+        "not",
+        "can",
+        "will",
+        "would",
+        "should",
+        "could"
     };
 
     public string Normalize(string input)
@@ -21,7 +64,7 @@ public class TextClean
         input = HtmlRegex.Replace(input, " ");
         input = input.ToLowerInvariant();
         input = NonAlphaRegex.Replace(input, " ");
-        input = Regex.Replace(input, "\s+", " ", RegexOptions.Compiled).Trim();
+        input = Regex.Replace(input, @"\s+", " ", RegexOptions.Compiled).Trim();
         return input;
     }
 
