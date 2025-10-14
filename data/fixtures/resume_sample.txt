@@ -1,0 +1,13 @@
+Jane Doe
+Senior Product Manager
+
+Summary
+Product leader with 8+ years building B2B SaaS platforms, shipping AI-powered experiences, and driving growth experimentation.
+
+Experience
+- Led roadmap for analytics platform, partnering with engineering, data science, and design.
+- Delivered API-first strategy enabling fintech integrations.
+- Scaled experimentation program with A/B testing and OKRs.
+
+Skills
+Product strategy, Roadmaps, Stakeholder management, Analytics, SQL, Python, APIs, SaaS, AI/ML, Growth, Agile, Scrum

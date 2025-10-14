@@ -1,0 +1,74 @@
+@page
+@model F500.JobMatch.Api.Pages.ResultsModel
+@{
+    ViewData["Title"] = "Top Matches";
+}
+
+<section class="container py-4">
+    <h1 class="display-6 mb-4">Top Matches</h1>
+    <div class="mb-3">
+        <label for="resumeId" class="form-label">Resume ID</label>
+        <input type="text" id="resumeId" class="form-control" value="@Model.ResumeId" />
+    </div>
+    <button class="btn btn-primary mb-3" id="loadResults">Load Matches</button>
+    <div id="status" class="text-muted mb-3"></div>
+    <div class="table-responsive">
+        <table class="table table-striped" id="resultsTable">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Company</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Why it fits</th>
+                    <th scope="col">Link</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const loadButton = document.getElementById('loadResults');
+        const status = document.getElementById('status');
+        const tableBody = document.querySelector('#resultsTable tbody');
+
+        async function loadMatches() {
+            const resumeId = document.getElementById('resumeId').value;
+            if (!resumeId) {
+                alert('Provide a resume ID');
+                return;
+            }
+            status.textContent = 'Loading matches...';
+            tableBody.innerHTML = '';
+            try {
+                const response = await fetch(`/api/match/top10?resumeId=${encodeURIComponent(resumeId)}`);
+                if (!response.ok) {
+                    throw new Error('Unable to fetch matches');
+                }
+                const data = await response.json();
+                status.textContent = data.length ? `Loaded ${data.length} matches.` : 'No matches found.';
+                for (const item of data) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.title}</td>
+                        <td>${item.company}</td>
+                        <td>${item.location ?? ''}</td>
+                        <td>${item.matchScore.toFixed(1)}</td>
+                        <td>${item.explanation.map(e => `<div>• ${e}</div>`).join('')}</td>
+                        <td><a href="${item.url}" target="_blank" rel="noopener">View</a></td>`;
+                    tableBody.appendChild(row);
+                }
+            } catch (err) {
+                status.textContent = `Error: ${err.message}`;
+            }
+        }
+
+        loadButton.addEventListener('click', loadMatches);
+        if (document.getElementById('resumeId').value) {
+            loadMatches();
+        }
+    </script>
+}
