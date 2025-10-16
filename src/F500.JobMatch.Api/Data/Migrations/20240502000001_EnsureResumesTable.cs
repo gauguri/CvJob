@@ -10,19 +10,30 @@ namespace F500.JobMatch.Api.Data.Migrations
         {
             migrationBuilder.Sql(
                 """
-                CREATE TABLE IF NOT EXISTS "Resumes" (
-                    "Id" TEXT NOT NULL CONSTRAINT "PK_Resumes" PRIMARY KEY,
-                    "FileName" TEXT NOT NULL,
-                    "Text" TEXT NOT NULL,
-                    "CreatedUtc" TEXT NOT NULL
-                );
+                IF OBJECT_ID(N'[dbo].[Resumes]', N'U') IS NULL
+                BEGIN
+                    CREATE TABLE [dbo].[Resumes]
+                    (
+                        [Id] uniqueidentifier NOT NULL CONSTRAINT [PK_Resumes] PRIMARY KEY,
+                        [FileName] nvarchar(256) NOT NULL,
+                        [Text] nvarchar(max) NOT NULL,
+                        [CreatedUtc] datetime2 NOT NULL
+                    );
+                END
                 """
             );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP TABLE IF EXISTS \"Resumes\";");
+            migrationBuilder.Sql(
+                """
+                IF OBJECT_ID(N'[dbo].[Resumes]', N'U') IS NOT NULL
+                BEGIN
+                    DROP TABLE [dbo].[Resumes];
+                END
+                """
+            );
         }
     }
 }
