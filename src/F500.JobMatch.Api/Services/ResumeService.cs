@@ -3,7 +3,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
-using Xceed.Words.NET;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using F500.JobMatch.Api.Data;
 
 namespace F500.JobMatch.Api.Services;
@@ -66,8 +67,25 @@ public class ResumeService
         await using var stream = new MemoryStream();
         await file.CopyToAsync(stream, cancellationToken);
         stream.Position = 0;
-        using var document = DocX.Load(stream);
-        return document.Text;
+
+        using var document = WordprocessingDocument.Open(stream, false);
+        var body = document.MainDocumentPart?.Document?.Body;
+        if (body == null)
+        {
+            return string.Empty;
+        }
+
+        var builder = new StringBuilder();
+        foreach (Paragraph paragraph in body.Descendants<Paragraph>())
+        {
+            var text = paragraph.InnerText;
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                builder.AppendLine(text);
+            }
+        }
+
+        return builder.ToString();
     }
 
     private static async Task<string> ExtractPdfAsync(IFormFile file, CancellationToken cancellationToken)
