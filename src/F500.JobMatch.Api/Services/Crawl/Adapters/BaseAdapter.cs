@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace F500.JobMatch.Api.Services.Crawl.Adapters;
 
@@ -49,6 +51,8 @@ public abstract class BaseAdapter
 
     protected IEnumerable<RawJobPosting> ParseStructuredData(string html, string company, Uri baseUri)
     {
+        var results = new List<RawJobPosting>();
+
         try
         {
             var document = Parser.ParseDocument(html);
@@ -67,7 +71,7 @@ public abstract class BaseAdapter
                         var posting = MapJsonJob(json.RootElement, company, baseUri);
                         if (posting != null)
                         {
-                            yield return posting;
+                            results.Add(posting);
                         }
                     }
                     else if (json.RootElement.TryGetProperty("@graph", out var graph) && graph.ValueKind == JsonValueKind.Array)
@@ -79,7 +83,7 @@ public abstract class BaseAdapter
                                 var posting = MapJsonJob(element, company, baseUri);
                                 if (posting != null)
                                 {
-                                    yield return posting;
+                                    results.Add(posting);
                                 }
                             }
                         }
@@ -91,6 +95,8 @@ public abstract class BaseAdapter
         {
             _logger.LogDebug(ex, "Failed to parse structured job data");
         }
+
+        return results;
     }
 
     private RawJobPosting? MapJsonJob(JsonElement element, string company, Uri baseUri)

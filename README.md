@@ -7,6 +7,10 @@ F500.JobMatch ingests a single resume, politely crawls Fortune 500 career sites 
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download)
 - SQLite (bundled with .NET via Microsoft.Data.Sqlite)
 
+If the SDK is missing in your environment (for example, the online execution sandbox used for these exercises), follow the
+[local development guide](docs/development.md) to install it with the official bootstrap script or by using the .NET SDK Docker
+image before running the commands below.
+
 ## Getting Started
 
 1. **Restore tools & build**

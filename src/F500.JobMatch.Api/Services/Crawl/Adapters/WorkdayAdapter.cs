@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AngleSharp.Dom;
+using Microsoft.Extensions.Logging;
 
 namespace F500.JobMatch.Api.Services.Crawl.Adapters;
 
@@ -73,17 +74,18 @@ public class WorkdayAdapter : BaseAdapter
         var index = html.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
         if (index < 0)
         {
-            yield break;
+            return Array.Empty<RawJobPosting>();
         }
 
         var start = html.IndexOf('[', index);
         var end = html.IndexOf(']', start);
         if (start < 0 || end < 0)
         {
-            yield break;
+            return Array.Empty<RawJobPosting>();
         }
 
         var json = html.Substring(start, end - start + 1);
+        var results = new List<RawJobPosting>();
         try
         {
             using var document = JsonDocument.Parse(json);
@@ -100,12 +102,14 @@ public class WorkdayAdapter : BaseAdapter
                 {
                     url = absolute.AbsoluteUri;
                 }
-                yield return CreatePosting(title, url, company, location, null, string.Empty, null, null);
+                results.Add(CreatePosting(title, url, company, location, null, string.Empty, null, null));
             }
         }
         catch (Exception ex)
         {
             _logger.LogDebug(ex, "Failed to parse Workday mosaic data");
         }
+
+        return results;
     }
 }
