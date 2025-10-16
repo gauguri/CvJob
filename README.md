@@ -47,19 +47,11 @@ image before running the commands below.
 }
 ```
 
-Update `ConnectionStrings:Default` to point at the database you want to use for storing resumes and job postings. The default configuration uses SQLite:
+Update `ConnectionStrings:Default` to point at the SQL Server instance you want to use for storing resumes and job postings. The default configuration targets the `SQLEXPRESS` instance on the local machine:
 
 ```
 "ConnectionStrings": {
-  "Default": "Provider=Sqlite;Data Source=jobmatch.db"
-}
-```
-
-To use SQL Server instead, change the `Provider` value to `SqlServer` (or omit it entirely) and supply a SQL Server connection string, for example:
-
-```
-"ConnectionStrings": {
-  "Default": "Provider=SqlServer;Server=.\\SQLEXPRESS;Database=JobMatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+  "Default": "Server=.\\SQLEXPRESS;Database=JobMatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
 }
 ```
 
