@@ -5,6 +5,7 @@ using F500.JobMatch.Api.Services;
 using F500.JobMatch.Api.Services.Crawl;
 using F500.JobMatch.Api.Services.Crawl.Adapters;
 using F500.JobMatch.Api.Services.Match;
+using F500.JobMatch.Api.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,8 @@ builder.Configuration.AddJsonFile("../F500.JobMatch.Api/appsettings.json", optio
 
 builder.Services.AddDbContext<JobMatchDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=jobmatch.db";
+    var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
+    var connectionString = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
     options.UseSqlite(connectionString);
 });
 
