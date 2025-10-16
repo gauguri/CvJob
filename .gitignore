@@ -23,3 +23,5 @@
 # OS-specific clutter
 .DS_Store
 Thumbs.db
+/F500.JobMatch.sln
+/src/F500.JobMatch.Api/Properties/launchSettings.json
