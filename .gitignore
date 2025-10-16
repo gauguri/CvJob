@@ -20,6 +20,9 @@
 *.local.json
 *.local.settings.json
 
+# Local database files
+jobmatch.db
+
 # OS-specific clutter
 .DS_Store
 Thumbs.db
