@@ -18,7 +18,7 @@ image before running the commands below.
    dotnet restore
    ```
 
-2. **Apply migrations** (creates the `JobMatch` database on your configured SQL Server instance)
+2. **Apply migrations** (creates the `JobMatch` database on your configured provider)
    ```bash
    dotnet ef database update --project src/F500.JobMatch.Api
    ```
@@ -47,7 +47,13 @@ image before running the commands below.
 }
 ```
 
-Update `ConnectionStrings:Default` to point at the SQL Server instance you want to use for storing resumes and job postings.
+Update `ConnectionStrings:Default` to point at the SQL Server instance you want to use for storing resumes and job postings. The default configuration targets the `SQLEXPRESS` instance on the local machine:
+
+```
+"ConnectionStrings": {
+  "Default": "Server=.\\SQLEXPRESS;Database=JobMatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+}
+```
 
 Update the Fortune 500 CSV path, crawler limits, or preferred locations as needed. `data/fortune500.sample.csv` ships with ~20 example companies; replace with a full list for production usage.
 
