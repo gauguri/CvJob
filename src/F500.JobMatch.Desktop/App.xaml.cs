@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using F500.JobMatch.Api.Configuration;
 using F500.JobMatch.Api.Data;
 using F500.JobMatch.Api.Services;
 using F500.JobMatch.Api.Services.Crawl;
@@ -32,7 +33,8 @@ public partial class App : Application
 
         builder.Services.AddDbContext<JobMatchDbContext>(options =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=jobmatch.db";
+            var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
+            var connectionString = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
             options.UseSqlite(connectionString);
         });
 

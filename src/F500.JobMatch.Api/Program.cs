@@ -6,6 +6,7 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
 using Serilog;
+using F500.JobMatch.Api.Configuration;
 using F500.JobMatch.Api.Data;
 using F500.JobMatch.Api.Middleware;
 using F500.JobMatch.Api.Services;
@@ -24,7 +25,8 @@ builder.Host.UseSerilog((ctx, cfg) =>
 
 builder.Services.AddDbContext<JobMatchDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=jobmatch.db";
+    var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
+    var connectionString = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
     options.UseSqlite(connectionString);
 });
 
