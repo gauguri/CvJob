@@ -13,10 +13,10 @@ public record CrawlSummaryDto
 {
     public string Domain { get; init; } = string.Empty;
     public string Company { get; init; } = string.Empty;
-    public int Scanned { get; init; };
-    public int Fetched { get; init; };
-    public int Stored { get; init; };
-    public int Skipped { get; init; };
+    public int Scanned { get; init; }
+    public int Fetched { get; init; }
+    public int Stored { get; init; }
+    public int Skipped { get; init; }
     public string Notes { get; init; } = string.Empty;
 }
 
@@ -26,9 +26,9 @@ public record MatchResultDto
 {
     public string Title { get; init; } = string.Empty;
     public string Company { get; init; } = string.Empty;
-    public string? Location { get; init; };
+    public string? Location { get; init; }
     public string Url { get; init; } = string.Empty;
-    public string? Source { get; init; };
-    public double MatchScore { get; init; };
+    public string? Source { get; init; }
+    public double MatchScore { get; init; }
     public IReadOnlyList<string> Explanation { get; init; } = Array.Empty<string>();
 }
