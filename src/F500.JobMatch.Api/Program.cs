@@ -1,6 +1,5 @@
 using System.Net;
 using System.Reflection;
-using AngleSharp;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Polly;
@@ -110,11 +109,11 @@ app.UseRouting();
 app.MapControllers();
 app.MapRazorPages();
 
-await EnsureDatabaseAsync(app.Services, app.Logger);
+await EnsureDatabaseAsync(app.Services, Log.Logger);
 
 app.Run();
 
-static async Task EnsureDatabaseAsync(IServiceProvider services, ILogger logger)
+static async Task EnsureDatabaseAsync(IServiceProvider services, Serilog.ILogger logger)
 {
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<JobMatchDbContext>();
