@@ -62,6 +62,15 @@ dotnet run --project src/F500.JobMatch.Cli -- crawl --csv data/fortune500.sample
 dotnet run --project src/F500.JobMatch.Cli -- match <resumeId> --top 10
 ```
 
+### Desktop App
+
+```bash
+dotnet run --project src/F500.JobMatch.Desktop
+```
+
+Use the desktop interface to choose a resume file, ingest it into the database, and review the ranked matches and explanations wi
+thin the same window.
+
 ### Respecting Terms of Service
 
 The crawler honors `robots.txt` by default, uses a configurable user agent, and includes conservative rate limits and page depth. If a site blocks bot access or requires authentication/CAPTCHA, the crawl is skipped and reported.

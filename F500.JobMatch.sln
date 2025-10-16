@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F500.JobMatch.Cli", "src/F5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F500.JobMatch.Tests", "src/F500.JobMatch.Tests/F500.JobMatch.Tests.csproj", "{C7DD842C-DBDF-4F4D-9C66-A8BE9D2D94BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F500.JobMatch.Desktop", "src/F500.JobMatch.Desktop/F500.JobMatch.Desktop.csproj", "{13853709-0B8D-49C3-9C5D-6559F63E36CB}"
+EndProject
 Global
 GlobalSection(SolutionConfigurationPlatforms) = preSolution
 Debug|Any CPU = Debug|Any CPU
@@ -26,5 +28,9 @@ GlobalSection(ProjectConfigurationPlatforms) = postSolution
 {C7DD842C-DBDF-4F4D-9C66-A8BE9D2D94BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 {C7DD842C-DBDF-4F4D-9C66-A8BE9D2D94BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 {C7DD842C-DBDF-4F4D-9C66-A8BE9D2D94BA}.Release|Any CPU.Build.0 = Release|Any CPU
+{13853709-0B8D-49C3-9C5D-6559F63E36CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+{13853709-0B8D-49C3-9C5D-6559F63E36CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+{13853709-0B8D-49C3-9C5D-6559F63E36CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+{13853709-0B8D-49C3-9C5D-6559F63E36CB}.Release|Any CPU.Build.0 = Release|Any CPU
 EndGlobalSection
 EndGlobal
