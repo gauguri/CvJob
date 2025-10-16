@@ -49,7 +49,8 @@ var serviceProvider = host.Services;
 using var scope = serviceProvider.CreateScope();
 var services = scope.ServiceProvider;
 
-await services.GetRequiredService<JobMatchDbContext>().Database.MigrateAsync();
+var dbContext = services.GetRequiredService<JobMatchDbContext>();
+await DatabaseInitializer.EnsureDatabaseCreatedAsync(dbContext);
 
 if (args.Length == 0)
 {

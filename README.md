@@ -5,7 +5,7 @@ F500.JobMatch ingests a single resume, politely crawls Fortune 500 career sites 
 ## Prerequisites
 
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download) (the repository pins 9.0.305 via `global.json` and allows forward-rolling to newer 9.x releases so contributors share a compatible toolchain)
-- SQL Server (LocalDB or a full SQL Server instance)
+- SQLite (ships with .NET, used by default) **or** SQL Server if you prefer running against a full instance
 
 If the SDK is missing in your environment (for example, the online execution sandbox used for these exercises), follow the
 [local development guide](docs/development.md) to install it with the official bootstrap script or by using the .NET SDK Docker
@@ -18,7 +18,7 @@ image before running the commands below.
    dotnet restore
    ```
 
-2. **Apply migrations** (creates the `JobMatch` database on your configured SQL Server instance)
+2. **Apply migrations** (creates the `JobMatch` database on your configured provider)
    ```bash
    dotnet ef database update --project src/F500.JobMatch.Api
    ```
@@ -47,7 +47,21 @@ image before running the commands below.
 }
 ```
 
-Update `ConnectionStrings:Default` to point at the SQL Server instance you want to use for storing resumes and job postings.
+Update `ConnectionStrings:Default` to point at the database you want to use for storing resumes and job postings. The default configuration uses SQLite:
+
+```
+"ConnectionStrings": {
+  "Default": "Provider=Sqlite;Data Source=jobmatch.db"
+}
+```
+
+To use SQL Server instead, change the `Provider` value to `SqlServer` (or omit it entirely) and supply a SQL Server connection string, for example:
+
+```
+"ConnectionStrings": {
+  "Default": "Provider=SqlServer;Server=.\\SQLEXPRESS;Database=JobMatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+}
+```
 
 Update the Fortune 500 CSV path, crawler limits, or preferred locations as needed. `data/fortune500.sample.csv` ships with ~20 example companies; replace with a full list for production usage.
 
