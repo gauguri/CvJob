@@ -9,15 +9,27 @@ public static class SqliteConnectionStringResolver
     private const string DefaultFileName = "jobmatch.db";
     private const string AppFolderName = "F500.JobMatch";
 
-    public static string Resolve(string? configuredConnectionString)
+    public static SqliteConnectionOptions Resolve(string? configuredConnectionString)
     {
         var builder = string.IsNullOrWhiteSpace(configuredConnectionString)
             ? new SqliteConnectionStringBuilder { DataSource = DefaultFileName }
             : new SqliteConnectionStringBuilder(configuredConnectionString);
 
-        if (IsInMemory(builder))
+        var isInMemory = IsInMemory(builder);
+        if (isInMemory)
         {
-            return builder.ToString();
+            if (builder.Cache == SqliteCacheMode.Default)
+            {
+                builder.Cache = SqliteCacheMode.Shared;
+            }
+
+            if (string.Equals(builder.DataSource, ":memory:", StringComparison.OrdinalIgnoreCase)
+                && builder.Mode == SqliteOpenMode.ReadWriteCreate)
+            {
+                builder.Mode = SqliteOpenMode.Memory;
+            }
+
+            return new SqliteConnectionOptions(builder.ToString(), true);
         }
 
         if (!Path.IsPathRooted(builder.DataSource))
@@ -41,7 +53,18 @@ public static class SqliteConnectionStringResolver
             }
         }
 
-        return builder.ToString();
+        return new SqliteConnectionOptions(builder.ToString(), false);
+    }
+
+    public static bool IsInMemory(string? connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return false;
+        }
+
+        var builder = new SqliteConnectionStringBuilder(connectionString);
+        return IsInMemory(builder);
     }
 
     private static bool IsInMemory(SqliteConnectionStringBuilder builder)
@@ -50,3 +73,5 @@ public static class SqliteConnectionStringResolver
                || builder.Mode == SqliteOpenMode.Memory;
     }
 }
+
+public sealed record SqliteConnectionOptions(string ConnectionString, bool IsInMemory);
