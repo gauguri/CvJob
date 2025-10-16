@@ -1,6 +1,7 @@
 using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
@@ -23,12 +24,31 @@ builder.Host.UseSerilog((ctx, cfg) =>
        .WriteTo.Console();
 });
 
-builder.Services.AddDbContext<JobMatchDbContext>(options =>
+var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
+var sqliteOptions = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
+
+if (sqliteOptions.IsInMemory)
 {
-    var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
-    var connectionString = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
-    options.UseSqlite(connectionString);
-});
+    builder.Services.AddSingleton(provider =>
+    {
+        var connection = new SqliteConnection(sqliteOptions.ConnectionString);
+        connection.Open();
+        return connection;
+    });
+
+    builder.Services.AddDbContext<JobMatchDbContext>((sp, options) =>
+    {
+        var connection = sp.GetRequiredService<SqliteConnection>();
+        options.UseSqlite(connection);
+    });
+}
+else
+{
+    builder.Services.AddDbContext<JobMatchDbContext>(options =>
+    {
+        options.UseSqlite(sqliteOptions.ConnectionString);
+    });
+}
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();

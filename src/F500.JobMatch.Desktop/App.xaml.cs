@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using Microsoft.Data.Sqlite;
 using F500.JobMatch.Api.Configuration;
 using F500.JobMatch.Api.Data;
 using F500.JobMatch.Api.Services;
@@ -31,12 +32,31 @@ public partial class App : Application
             builder.Configuration.AddJsonFile(apiSettingsPath, optional: true);
         }
 
-        builder.Services.AddDbContext<JobMatchDbContext>(options =>
+        var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
+        var sqliteOptions = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
+
+        if (sqliteOptions.IsInMemory)
         {
-            var configuredConnectionString = builder.Configuration.GetConnectionString("Default");
-            var connectionString = SqliteConnectionStringResolver.Resolve(configuredConnectionString);
-            options.UseSqlite(connectionString);
-        });
+            builder.Services.AddSingleton(provider =>
+            {
+                var connection = new SqliteConnection(sqliteOptions.ConnectionString);
+                connection.Open();
+                return connection;
+            });
+
+            builder.Services.AddDbContext<JobMatchDbContext>((sp, options) =>
+            {
+                var connection = sp.GetRequiredService<SqliteConnection>();
+                options.UseSqlite(connection);
+            });
+        }
+        else
+        {
+            builder.Services.AddDbContext<JobMatchDbContext>(options =>
+            {
+                options.UseSqlite(sqliteOptions.ConnectionString);
+            });
+        }
 
         builder.Services.AddLogging(lb => lb.AddSerilog(new LoggerConfiguration().WriteTo.Console().CreateLogger()));
 
