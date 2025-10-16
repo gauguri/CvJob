@@ -1,16 +1,16 @@
 # Local development
 
-The repository targets the .NET 8 SDK. Several online build agents already include the SDK by default, but the execution
+The repository targets the .NET SDK pinned in `global.json` (currently 9.0.305). Several online build agents already include the SDK by default, but the execution
 environment for these exercises starts from a minimal image without the `dotnet` CLI. Use one of the following approaches to
 make the SDK available before running `dotnet` commands.
 
 ## Option 1: Install with the official script
 
 ```bash
-# download the installer and install the desired SDK version under ~/.dotnet
+# download the installer and install the pinned SDK under ~/.dotnet
 curl -SL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
 chmod +x /tmp/dotnet-install.sh
-/tmp/dotnet-install.sh --channel 8.0 --install-dir "$HOME/.dotnet"
+/tmp/dotnet-install.sh --version 9.0.305 --install-dir "$HOME/.dotnet"
 
 # expose the CLI for the current shell
 export DOTNET_ROOT="$HOME/.dotnet"
@@ -25,7 +25,7 @@ internet access, copy them into the container, and point `--install-dir` to that
 ## Option 2: Use the .NET SDK container image
 
 ```bash
-docker run --rm -v "$PWD:/workspace" -w /workspace mcr.microsoft.com/dotnet/sdk:8.0 dotnet build
+docker run --rm -v "$PWD:/workspace" -w /workspace mcr.microsoft.com/dotnet/sdk:9.0 dotnet build
 ```
 
 This approach runs the build inside the official SDK image without installing anything on the host. Ensure that Docker is
