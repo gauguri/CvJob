@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using F500.JobMatch.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,16 +12,43 @@ public static class ServiceCollectionExtensions
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new InvalidOperationException("A SQL Server connection string must be configured.");
+            throw new InvalidOperationException("A database connection string must be configured.");
         }
 
-        services.AddDbContext<JobMatchDbContext>(options =>
+        var builder = new DbConnectionStringBuilder
         {
-            options.UseSqlServer(connectionString, builder =>
+            ConnectionString = connectionString
+        };
+
+        string? provider = null;
+        if (builder.TryGetValue("Provider", out var providerValue))
+        {
+            provider = providerValue?.ToString();
+            builder.Remove("Provider");
+            connectionString = builder.ConnectionString;
+        }
+
+        if (string.Equals(provider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddDbContext<JobMatchDbContext>(options =>
             {
-                builder.MigrationsAssembly(typeof(JobMatchDbContext).Assembly.FullName);
+                options.UseSqlite(connectionString);
             });
-        });
+        }
+        else if (provider is null || string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddDbContext<JobMatchDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(typeof(JobMatchDbContext).Assembly.FullName);
+                });
+            });
+        }
+        else
+        {
+            throw new InvalidOperationException($"Unsupported database provider '{provider}'.");
+        }
 
         return services;
     }

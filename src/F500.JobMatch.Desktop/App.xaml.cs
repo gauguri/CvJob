@@ -65,7 +65,7 @@ public partial class App : Application
 
         using var scope = _host.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<JobMatchDbContext>();
-        db.Database.Migrate();
+        DatabaseInitializer.EnsureDatabaseCreated(db);
 
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();

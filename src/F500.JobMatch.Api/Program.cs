@@ -115,6 +115,6 @@ static async Task EnsureDatabaseAsync(IServiceProvider services, Serilog.ILogger
 {
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<JobMatchDbContext>();
-    logger.Information("Applying database migrations");
-    await db.Database.MigrateAsync();
+    logger.Information("Ensuring database is created");
+    await DatabaseInitializer.EnsureDatabaseCreatedAsync(db);
 }
