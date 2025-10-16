@@ -5,7 +5,7 @@ F500.JobMatch ingests a single resume, politely crawls Fortune 500 career sites 
 ## Prerequisites
 
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download) (the repository pins 9.0.305 via `global.json` and allows forward-rolling to newer 9.x releases so contributors share a compatible toolchain)
-- SQLite (bundled with .NET via Microsoft.Data.Sqlite)
+- SQL Server (LocalDB or a full SQL Server instance)
 
 If the SDK is missing in your environment (for example, the online execution sandbox used for these exercises), follow the
 [local development guide](docs/development.md) to install it with the official bootstrap script or by using the .NET SDK Docker
@@ -18,7 +18,7 @@ image before running the commands below.
    dotnet restore
    ```
 
-2. **Apply migrations** (creates `jobmatch.db` in the API project directory)
+2. **Apply migrations** (creates the `JobMatch` database on your configured SQL Server instance)
    ```bash
    dotnet ef database update --project src/F500.JobMatch.Api
    ```
@@ -46,6 +46,8 @@ image before running the commands below.
   "PreferredLocations": [ "Remote", "New York", "San Francisco", "Seattle", "Austin" ]
 }
 ```
+
+Update `ConnectionStrings:Default` to point at the SQL Server instance you want to use for storing resumes and job postings.
 
 Update the Fortune 500 CSV path, crawler limits, or preferred locations as needed. `data/fortune500.sample.csv` ships with ~20 example companies; replace with a full list for production usage.
 

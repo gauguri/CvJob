@@ -13,10 +13,10 @@ namespace F500.JobMatch.Api.Data.Migrations
                 name: "Resumes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FileName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Text = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedUtc = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,18 +27,18 @@ namespace F500.JobMatch.Api.Data.Migrations
                 name: "JobPostings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StableIdHash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Company = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Location = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DescriptionHtml = table.Column<string>(type: "TEXT", nullable: true),
-                    DescriptionText = table.Column<string>(type: "TEXT", nullable: false),
-                    EmploymentType = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
-                    PostedAtUtc = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Url = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
-                    Source = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
-                    FetchedAtUtc = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StableIdHash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Company = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    DescriptionHtml = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DescriptionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmploymentType = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    PostedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Source = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    FetchedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
