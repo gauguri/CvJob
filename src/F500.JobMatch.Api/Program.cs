@@ -58,6 +58,7 @@ builder.Services.AddHttpClient("robots")
         .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 2)));
 
 builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<IDataBootstrapper, DataBootstrapper>();
 builder.Services.AddScoped<CrawlDispatcher>();
 builder.Services.AddScoped<RobotsService>();
 builder.Services.AddScoped<DedupeService>();
