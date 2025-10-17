@@ -8,6 +8,7 @@ namespace F500.JobMatch.Api.Services.Match;
 
 public class MatchScoring
 {
+    private const int DefaultTopMatches = 10;
     private static readonly Regex YearsRegex = new("(\\d+)\\+?\\s*years", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex TitleRegex = new("(?i)(product\\s*manager|senior\\s*product\\s*manager|group\\s*pm|principal\\s*pm|director\\s*of\\s*product|product\\s*lead|technical\\s*product\\s*manager|platform\\s*pm|growth\\s*product\\s*manager|ai\\s*product\\s*manager|ml\\s*product\\s*manager|data\\s*product\\s*manager)");
     private static readonly Dictionary<string, double> KeywordWeights = new(StringComparer.OrdinalIgnoreCase)
@@ -58,6 +59,11 @@ public class MatchScoring
 
     public async Task<IReadOnlyList<MatchScoreResult>> ScoreTopAsync(Guid resumeId, int top, CancellationToken cancellationToken)
     {
+        if (top <= 0)
+        {
+            top = DefaultTopMatches;
+        }
+
         var resume = await _dbContext.Resumes.FirstOrDefaultAsync(r => r.Id == resumeId, cancellationToken);
         if (resume == null)
         {
