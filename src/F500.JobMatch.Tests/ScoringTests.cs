@@ -66,4 +66,46 @@ public class ScoringTests
         Assert.True(results[0].Score >= results[1].Score);
         Assert.InRange(results[0].Score, 0, 100);
     }
+
+    [Fact]
+    public async Task ScoreTopAsync_DefaultsToTenWhenTopIsNotPositive()
+    {
+        var options = new DbContextOptionsBuilder<JobMatchDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new JobMatchDbContext(options);
+        var resume = new Resume
+        {
+            Id = Guid.NewGuid(),
+            FileName = "resume.txt",
+            Text = "Seasoned product manager with roadmap ownership.",
+            CreatedUtc = DateTime.UtcNow
+        };
+        context.Resumes.Add(resume);
+        context.JobPostings.Add(new JobPosting
+        {
+            Id = Guid.NewGuid(),
+            StableIdHash = Guid.NewGuid().ToString("N"),
+            Title = "Product Manager",
+            Company = "ExampleCorp",
+            Location = "Remote",
+            DescriptionText = "Product manager role owning the roadmap.",
+            Url = "https://example.com/job",
+            Source = "Test",
+            FetchedAtUtc = DateTime.UtcNow
+        });
+        await context.SaveChangesAsync();
+
+        var configuration = new ConfigurationBuilder().Build();
+        var clean = new TextClean();
+        var vectorizer = new TfIdfVectorizer(clean);
+        var scoring = new MatchScoring(context, vectorizer, clean, configuration);
+
+        var zeroTopResults = await scoring.ScoreTopAsync(resume.Id, 0, CancellationToken.None);
+        var negativeTopResults = await scoring.ScoreTopAsync(resume.Id, -5, CancellationToken.None);
+
+        Assert.Equal(1, zeroTopResults.Count);
+        Assert.Equal(1, negativeTopResults.Count);
+    }
 }
