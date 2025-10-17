@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using FuzzySharp;
 using Microsoft.EntityFrameworkCore;
 using F500.JobMatch.Api.Data;
+using F500.JobMatch.Api.Services;
 
 namespace F500.JobMatch.Api.Services.Match;
 
@@ -48,13 +49,20 @@ public class MatchScoring
     private readonly TfIdfVectorizer _vectorizer;
     private readonly TextClean _clean;
     private readonly IConfiguration _configuration;
+    private readonly IDataBootstrapper _bootstrapper;
 
-    public MatchScoring(JobMatchDbContext dbContext, TfIdfVectorizer vectorizer, TextClean clean, IConfiguration configuration)
+    public MatchScoring(
+        JobMatchDbContext dbContext,
+        TfIdfVectorizer vectorizer,
+        TextClean clean,
+        IConfiguration configuration,
+        IDataBootstrapper? bootstrapper = null)
     {
         _dbContext = dbContext;
         _vectorizer = vectorizer;
         _clean = clean;
         _configuration = configuration;
+        _bootstrapper = bootstrapper ?? NullDataBootstrapper.Instance;
     }
 
     public async Task<IReadOnlyList<MatchScoreResult>> ScoreTopAsync(Guid resumeId, int top, CancellationToken cancellationToken)
@@ -63,6 +71,8 @@ public class MatchScoring
         {
             top = DefaultTopMatches;
         }
+
+        await _bootstrapper.EnsureJobPostingsAsync(cancellationToken);
 
         var resume = await _dbContext.Resumes.FirstOrDefaultAsync(r => r.Id == resumeId, cancellationToken);
         if (resume == null)
@@ -176,6 +186,21 @@ public class MatchScoring
         return Math.Abs(resumeYears - jobYears) <= 2 ? 5 : 0;
     }
 }
+
+file sealed class NullDataBootstrapper : IDataBootstrapper
+{
+    public static NullDataBootstrapper Instance { get; } = new();
+
+    private NullDataBootstrapper()
+    {
+    }
+
+    public Task EnsureJobPostingsAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+}
+
 
 public record MatchScoreResult(
     JobPosting Posting,

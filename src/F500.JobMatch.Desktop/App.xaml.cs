@@ -41,6 +41,7 @@ public partial class App : Application
         builder.Services.AddHttpClient("robots");
 
         builder.Services.AddScoped<ResumeService>();
+        builder.Services.AddScoped<IDataBootstrapper, DataBootstrapper>();
         builder.Services.AddScoped<CrawlDispatcher>();
         builder.Services.AddScoped<RobotsService>();
         builder.Services.AddScoped<DedupeService>();
