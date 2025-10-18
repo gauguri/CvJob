@@ -62,7 +62,9 @@ public class ScoringTests
         var scoring = new MatchScoring(context, vectorizer, clean, configuration);
         var results = await scoring.ScoreTopAsync(resume.Id, 10, CancellationToken.None);
 
-        Assert.Equal(2, results.Count);
+        Assert.Collection(results,
+            _ => { },
+            _ => { });
         Assert.True(results[0].Score >= results[1].Score);
         Assert.InRange(results[0].Score, 0, 100);
     }
@@ -105,7 +107,7 @@ public class ScoringTests
         var zeroTopResults = await scoring.ScoreTopAsync(resume.Id, 0, CancellationToken.None);
         var negativeTopResults = await scoring.ScoreTopAsync(resume.Id, -5, CancellationToken.None);
 
-        Assert.Equal(1, zeroTopResults.Count);
-        Assert.Equal(1, negativeTopResults.Count);
+        Assert.Single(zeroTopResults);
+        Assert.Single(negativeTopResults);
     }
 }
