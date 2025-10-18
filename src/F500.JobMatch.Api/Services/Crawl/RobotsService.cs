@@ -39,7 +39,7 @@ public class RobotsService
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to evaluate robots.txt for {Url}", uri);
-            return false;
+            return true;
         }
     }
 }
