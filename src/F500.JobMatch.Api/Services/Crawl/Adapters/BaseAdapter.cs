@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -64,31 +65,7 @@ public abstract class BaseAdapter
                 }
 
                 using var json = JsonDocument.Parse(script.TextContent);
-                if (json.RootElement.ValueKind == JsonValueKind.Object && json.RootElement.TryGetProperty("@type", out var type))
-                {
-                    if (string.Equals(type.GetString(), "JobPosting", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var posting = MapJsonJob(json.RootElement, company, baseUri);
-                        if (posting != null)
-                        {
-                            results.Add(posting);
-                        }
-                    }
-                    else if (json.RootElement.TryGetProperty("@graph", out var graph) && graph.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var element in graph.EnumerateArray())
-                        {
-                            if (element.TryGetProperty("@type", out var nestedType) && string.Equals(nestedType.GetString(), "JobPosting", StringComparison.OrdinalIgnoreCase))
-                            {
-                                var posting = MapJsonJob(element, company, baseUri);
-                                if (posting != null)
-                                {
-                                    results.Add(posting);
-                                }
-                            }
-                        }
-                    }
-                }
+                ExtractJobPostings(json.RootElement, company, baseUri, results);
             }
         }
         catch (Exception ex)
@@ -97,6 +74,68 @@ public abstract class BaseAdapter
         }
 
         return results;
+    }
+
+    private void ExtractJobPostings(JsonElement element, string company, Uri baseUri, ICollection<RawJobPosting> results)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                if (IsJobPosting(element))
+                {
+                    var posting = MapJsonJob(element, company, baseUri);
+                    if (posting != null)
+                    {
+                        results.Add(posting);
+                    }
+                }
+
+                if (element.TryGetProperty("@graph", out var graph) && graph.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var graphElement in graph.EnumerateArray())
+                    {
+                        ExtractJobPostings(graphElement, company, baseUri, results);
+                    }
+                }
+
+                foreach (var property in element.EnumerateObject())
+                {
+                    if (property.NameEquals("@graph"))
+                    {
+                        continue;
+                    }
+
+                    if (property.Value.ValueKind == JsonValueKind.Object || property.Value.ValueKind == JsonValueKind.Array)
+                    {
+                        ExtractJobPostings(property.Value, company, baseUri, results);
+                    }
+                }
+
+                break;
+
+            case JsonValueKind.Array:
+                foreach (var item in element.EnumerateArray())
+                {
+                    ExtractJobPostings(item, company, baseUri, results);
+                }
+
+                break;
+        }
+    }
+
+    private bool IsJobPosting(JsonElement element)
+    {
+        if (!element.TryGetProperty("@type", out var typeElement))
+        {
+            return false;
+        }
+
+        return typeElement.ValueKind switch
+        {
+            JsonValueKind.String => string.Equals(typeElement.GetString(), "JobPosting", StringComparison.OrdinalIgnoreCase),
+            JsonValueKind.Array => typeElement.EnumerateArray().Any(t => t.ValueKind == JsonValueKind.String && string.Equals(t.GetString(), "JobPosting", StringComparison.OrdinalIgnoreCase)),
+            _ => false
+        };
     }
 
     private RawJobPosting? MapJsonJob(JsonElement element, string company, Uri baseUri)
